@@ -80,8 +80,7 @@ COPY python/www/dash/requirements.txt /tmp/dash_requirements.txt
 RUN pip3 install --no-cache-dir --verbose --upgrade Cython && \
     pip3 install --no-cache-dir --verbose -r /tmp/pytorch_ssd_requirements.txt && \
     pip3 install --no-cache-dir --verbose -r /tmp/flask_requirements.txt && \
-    pip3 install --no-cache-dir --verbose -r /tmp/dash_requirements.txt && \
-    pip3 install --no-cache-dir --verbose "fastapi[all]"
+    pip3 install --no-cache-dir --verbose -r /tmp/dash_requirements.txt 
     
     
 # 
@@ -127,3 +126,5 @@ RUN mkdir docs && \
 
 # workaround for "cannot allocate memory in static TLS block"
 ENV LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libgomp.so.1
+
+# l4t-pytorch:r32.7.1-pth1.10-py3
