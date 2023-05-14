@@ -7,3 +7,4 @@ logs/
 *.tar.gz
 *.pem
 utils
+unity/raw/*
