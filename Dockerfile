@@ -80,10 +80,7 @@ COPY python/www/dash/requirements.txt /tmp/dash_requirements.txt
 RUN pip3 install --no-cache-dir --verbose --upgrade Cython && \
     pip3 install --no-cache-dir --verbose -r /tmp/pytorch_ssd_requirements.txt && \
     pip3 install --no-cache-dir --verbose -r /tmp/flask_requirements.txt && \
-    pip3 install --no-cache-dir --verbose -r /tmp/dash_requirements.txt  && \
-    python3 -m pip install --upgrade pip && \
-    pip3 install fastapi[all]    
-    
+    pip3 install --no-cache-dir --verbose -r /tmp/dash_requirements.txt      
 # 
 # install OpenCV (with CUDA)
 #
@@ -129,3 +126,8 @@ RUN mkdir docs && \
 ENV LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libgomp.so.1
 
 # l4t-pytorch:r32.7.1-pth1.10-py3
+
+# install FastAPI at the end
+RUN  python3 -m pip install --upgrade pip && \
+      pip3 install fastapi[all]    
+
