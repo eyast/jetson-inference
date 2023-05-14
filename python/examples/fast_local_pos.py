@@ -6,8 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
 origins = [
-    "http://localhost.tiangolo.com",
-    "https://localhost.tiangolo.com",
+    "https://play.unity.com",
     "http://localhost",
     "http://localhost:8080",
 ]
