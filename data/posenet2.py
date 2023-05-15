@@ -37,7 +37,9 @@ input = videoSource(args.input, argv=sys.argv)
 
 @app.route('/')
 def index():
-    eye_location = []
+    eye_location = {}
+    eye_location["1"] = {}
+    eye_location["2"] = {}
     img = input.Capture()
 
     if img is None: # timeout
@@ -46,9 +48,8 @@ def index():
     for pose in poses:
         for keypoint in pose.Keypoints:
              if keypoint.ID == 1 or keypoint.ID == 2:
-                eye_location.append(keypoint.x)
-                eye_location.append(keypoint.y)
-    eye_location = [str(val) for val in eye_location]
-    return "".join(eye_location)
+                eye_location[str(keypoint.ID)]["x"] = str(keypoint.x)
+                eye_location[str(keypoint.ID)]["y"] = str(keypoint.y)
+    return eye_location
 
 app.run(host="0.0.0.0", port="8050", debug=True)
