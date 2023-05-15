@@ -1,31 +1,12 @@
-#!/usr/bin/env python3
-#
-# Copyright (c) 2021, NVIDIA CORPORATION. All rights reserved.
-#
-# Permission is hereby granted, free of charge, to any person obtaining a
-# copy of this software and associated documentation files (the "Software"),
-# to deal in the Software without restriction, including without limitation
-# the rights to use, copy, modify, merge, publish, distribute, sublicense,
-# and/or sell copies of the Software, and to permit persons to whom the
-# Software is furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
-# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-# DEALINGS IN THE SOFTWARE.
-#
+
 
 import sys
 import argparse
+import pdb
 
-import flask
-app = flask.Flask(__name__)
+# import flask
+# app = flask.Flask(__name__)
+
 from jetson_inference import poseNet
 from jetson_utils import videoSource, videoOutput, Log
 
@@ -52,12 +33,12 @@ net = poseNet(args.network, sys.argv, args.threshold)
 
 # create video sources & outputs
 input = videoSource(args.input, argv=sys.argv)
-output = videoOutput(args.output, argv=sys.argv)
+#output = videoOutput(args.output, argv=sys.argv)
 
-returns = ""
-@app.route('/')
-def index():
-     return returns
+# returns = ""
+# @app.route('/')
+# def index():
+#      return returns
 
 # process frames until EOS or the user exits
 while True:
@@ -74,20 +55,21 @@ while True:
     print("detected {:d} objects in image".format(len(poses)))
 
     for pose in poses:
-        print(pose)
-        print(pose.Keypoints)
-        returns = pose.Keypoints
-        print('Links', pose.Links)
+        for keypoint in pose.Keypoints:
+             if keypoint.ID == 1 or keypoint.ID == 2:
+                print(keypoint)
+                pdb.set_trace()
+
 
     # render the image
-    output.Render(img)
+    # output.Render(img)
 
     # update the title bar
-    output.SetStatus("{:s} | Network {:.0f} FPS".format(args.network, net.GetNetworkFPS()))
+    # output.SetStatus("{:s} | Network {:.0f} FPS".format(args.network, net.GetNetworkFPS()))
 
     # print out performance info
-    net.PrintProfilerTimes()
+    # net.PrintProfilerTimes()
 
     # exit on input/output EOS
-    if not input.IsStreaming() or not output.IsStreaming():
+    if not input.IsStreaming():# or not output.IsStreaming():
         break
