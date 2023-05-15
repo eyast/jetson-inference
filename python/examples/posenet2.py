@@ -24,6 +24,8 @@
 import sys
 import argparse
 
+import flask
+app = flask.Flask(__name__)
 from jetson_inference import poseNet
 from jetson_utils import videoSource, videoOutput, Log
 
@@ -52,6 +54,11 @@ net = poseNet(args.network, sys.argv, args.threshold)
 input = videoSource(args.input, argv=sys.argv)
 output = videoOutput(args.output, argv=sys.argv)
 
+returns = ""
+@app.route('/')
+def index():
+     return returns
+
 # process frames until EOS or the user exits
 while True:
     # capture the next image
@@ -69,6 +76,7 @@ while True:
     for pose in poses:
         print(pose)
         print(pose.Keypoints)
+        returns = pose.Keypoints
         print('Links', pose.Links)
 
     # render the image
