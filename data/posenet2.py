@@ -35,9 +35,9 @@ net = poseNet(args.network, sys.argv, args.threshold)
 input = videoSource(args.input, argv=sys.argv)
 #output = videoOutput(args.output, argv=sys.argv)
 
-eye_location = {}
 @app.route('/')
 def index():
+    eye_location = []
     img = input.Capture()
 
     if img is None: # timeout
@@ -46,10 +46,8 @@ def index():
     for pose in poses:
         for keypoint in pose.Keypoints:
              if keypoint.ID == 1 or keypoint.ID == 2:
-                # pdb.set_trace()
-                print(keypoint)
-                id = str(keypoint.ID)
-                eye_location[id] == {"x": keypoint.x, "y": keypoint.y}
+                eye_location.append(keypoint.x)
+                eye_location.append(keypoint.y)
     return eye_location
 
 app.run(host="0.0.0.0", port="8050", debug=True)
