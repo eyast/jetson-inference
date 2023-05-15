@@ -4,8 +4,8 @@ import sys
 import argparse
 import pdb
 
-# import flask
-# app = flask.Flask(__name__)
+import flask
+app = flask.Flask(__name__)
 
 from jetson_inference import poseNet
 from jetson_utils import videoSource, videoOutput, Log
@@ -35,41 +35,21 @@ net = poseNet(args.network, sys.argv, args.threshold)
 input = videoSource(args.input, argv=sys.argv)
 #output = videoOutput(args.output, argv=sys.argv)
 
-# returns = ""
-# @app.route('/')
-# def index():
-#      return returns
-
-# process frames until EOS or the user exits
-while True:
-    # capture the next image
+eye_location = {}
+@app.route('/')
+def index():
     img = input.Capture()
 
     if img is None: # timeout
-        continue  
-
-    # perform pose estimation (with overlay)
+        return "No Image"
     poses = net.Process(img, overlay=args.overlay)
-
-    # print the pose results
-    print("detected {:d} objects in image".format(len(poses)))
-
     for pose in poses:
         for keypoint in pose.Keypoints:
              if keypoint.ID == 1 or keypoint.ID == 2:
+                # pdb.set_trace()
                 print(keypoint)
-                pdb.set_trace()
+                id = str(keypoint.ID)
+                eye_location[id] == {"x": keypoint.x, "y": keypoint.y}
+    return eye_location
 
-
-    # render the image
-    # output.Render(img)
-
-    # update the title bar
-    # output.SetStatus("{:s} | Network {:.0f} FPS".format(args.network, net.GetNetworkFPS()))
-
-    # print out performance info
-    # net.PrintProfilerTimes()
-
-    # exit on input/output EOS
-    if not input.IsStreaming():# or not output.IsStreaming():
-        break
+app.run(host="0.0.0.0", port="8050", debug=True)
