@@ -3,7 +3,7 @@
 import sys
 import argparse
 import pdb
-
+import time
 import flask
 app = flask.Flask(__name__)
 
@@ -39,14 +39,17 @@ except:
 
 # load the pose estimation model
 net = poseNet(args.network, sys.argv, args.threshold)
-depthnet = depthNet(args.depthnetwork, sys.argv)
+#depthnet = depthNet(args.depthnetwork, sys.argv)
 
 # create video sources & outputs
 input = videoSource(args.input, argv=sys.argv)
 #output = videoOutput(args.output, argv=sys.argv)
+#img = input.Capture()
+#poses = net.Process(img, overlay=args.overlay)
 
 @app.route('/')
 def index():
+    time_start = time.time()
     eye_location = {}
     eye_location["1"] = {}
     eye_location["2"] = {}
@@ -61,14 +64,15 @@ def index():
                 eye_location[str(keypoint.ID)]["x"] = str(keypoint.x)
                 eye_location[str(keypoint.ID)]["y"] = str(keypoint.y)
     
-    buffers = depthBuffers(args)
-    buffers.Alloc(img.shape, img.format)
-    out = depthnet.Process(img, buffers.depth, args.colormap, args.filter_mode)
-    pdb.set_trace()
-    if buffers.use_input:
-        cudaOverlay(img, buffers.composite, 0, 0)
-    if buffers.use_depth:
-        cudaOverlay(buffers.depth, buffers.composite, img.width if buffers.use_input else 0, 0)
+#    buffers = depthBuffers(args)
+#    buffers.Alloc(img.shape, img.format)
+#    out = depthnet.Process(img, buffers.depth, args.colormap, args.filter_mode)
+#    if buffers.use_input:
+#        cudaOverlay(img, buffers.composite, 0, 0)
+#    if buffers.use_depth:
+#        cudaOverlay(buffers.depth, buffers.composite, img.width if buffers.use_input else 0, 0)
+    time_end = time.time()
+    print(time_end - time_start)
     return eye_location
 
 app.run(host="0.0.0.0", port="8050", debug=True)
