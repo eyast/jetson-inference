@@ -48,6 +48,7 @@ def index():
              if keypoint.ID == 1 or keypoint.ID == 2:
                 eye_location.append(keypoint.x)
                 eye_location.append(keypoint.y)
-    return eye_location
+    eye_location = [str(val) for val in eye_location]
+    return "".join(eye_location)
 
 app.run(host="0.0.0.0", port="8050", debug=True)
