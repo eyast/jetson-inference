@@ -36,14 +36,14 @@ parser.add_argument("--port", default=8050, type=int, help="port used for webser
 parser.add_argument("--ssl-key", default=os.getenv('SSL_KEY'), type=str, help="path to PEM-encoded SSL/TLS key file for enabling HTTPS")
 parser.add_argument("--ssl-cert", default=os.getenv('SSL_CERT'), type=str, help="path to PEM-encoded SSL/TLS certificate file for enabling HTTPS")
 parser.add_argument("--title", default='Hello AI World', type=str, help="the title of the webpage as shown in the browser")
-parser.add_argument("--input", default='webrtc://@:8554/input', type=str, help="input camera stream or video file")
+parser.add_argument("--input", default='/dev/video0', type=str, help="input camera stream or video file")
 parser.add_argument("--output", default='webrtc://@:8554/output', type=str, help="WebRTC output stream to serve from --input")
 parser.add_argument("--classification", default='', type=str, help="load classification model (see imageNet arguments)")
 parser.add_argument("--detection", default='', type=str, help="load object detection model (see detectNet arguments)")
 parser.add_argument("--segmentation", default='', type=str, help="load semantic segmentation model (see segNet arguments)")
 parser.add_argument("--background", default='', type=str, help="load background removal model (see backgroundNet arguments)")
 parser.add_argument("--action", default='', type=str, help="load action recognition model (see actionNet arguments)")
-parser.add_argument("--pose", default='', type=str, help="load action recognition model (see actionNet arguments)")
+parser.add_argument("--pose", default='resnet18-body', type=str, help="load action recognition model (see actionNet arguments)")
 parser.add_argument("--labels", default='', type=str, help="path to labels.txt for loading a custom model")
 parser.add_argument("--colors", default='', type=str, help="path to colors.txt for loading a custom model")
 parser.add_argument("--input-layer", default='', type=str, help="name of input layer for loading a custom model")
@@ -68,89 +68,15 @@ def index():
                                  action=os.path.basename(args.action), 
                                  background=os.path.basename(args.background))
 
-if args.classification:
-    @app.route('/classification/enabled', methods=['GET', 'PUT'])
-    def classification_enabled():
-        return rest_property(stream.models['classification'].IsEnabled, stream.models['classification'].SetEnabled, bool)
-        
-    @app.route('/classification/confidence_threshold', methods=['GET', 'PUT'])
-    def classification_confidence_threshold():
-        return rest_property(stream.models['classification'].net.GetThreshold, stream.models['classification'].net.SetThreshold, float)
-      
-    @app.route('/classification/output_smoothing', methods=['GET', 'PUT'])
-    def classification_output_smoothing():
-        return rest_property(stream.models['classification'].net.GetSmoothing, stream.models['classification'].net.SetSmoothing, float)
-        
-if args.detection:
-    @app.route('/detection/enabled', methods=['GET', 'PUT'])
-    def detection_enabled():
-        return rest_property(stream.models['detection'].IsEnabled, stream.models['detection'].SetEnabled, bool)
-      
-    @app.route('/detection/confidence_threshold', methods=['GET', 'PUT'])
-    def detection_confidence_threshold():
-        return rest_property(stream.models['detection'].net.GetConfidenceThreshold, stream.models['detection'].net.SetConfidenceThreshold, float)
-      
-    @app.route('/detection/clustering_threshold', methods=['GET', 'PUT'])
-    def detection_clustering_threshold():
-        return rest_property(stream.models['detection'].net.GetClusteringThreshold, stream.models['detection'].net.SetClusteringThreshold, float)
-        
-    @app.route('/detection/overlay_alpha', methods=['GET', 'PUT'])
-    def detection_overlay_alpha():
-        return rest_property(stream.models['detection'].net.GetOverlayAlpha, stream.models['detection'].net.SetOverlayAlpha, float)
-        
-    @app.route('/detection/tracking_enabled', methods=['GET', 'PUT'])
-    def detection_tracking_enabled():
-        return rest_property(stream.models['detection'].net.IsTrackingEnabled, stream.models['detection'].net.SetTrackingEnabled, bool)
 
-    @app.route('/detection/tracking_min_frames', methods=['GET', 'PUT'])
-    def detection_tracking_min_frames():
-        return rest_property(stream.models['detection'].net.GetTrackingParams, stream.models['detection'].net.SetTrackingParams, int, key='minFrames')
-
-    @app.route('/detection/tracking_drop_frames', methods=['GET', 'PUT'])
-    def detection_tracking_drop_frames():
-        return rest_property(stream.models['detection'].net.GetTrackingParams, stream.models['detection'].net.SetTrackingParams, int, key='dropFrames')
-
-    @app.route('/detection/tracking_overlap_threshold', methods=['GET', 'PUT'])
-    def detection_tracking_overlap_threshold():
-        return rest_property(stream.models['detection'].net.GetTrackingParams, stream.models['detection'].net.SetTrackingParams, int, key='overlapThreshold')
-   
-if args.segmentation:
-    @app.route('/segmentation/enabled', methods=['GET', 'PUT'])
-    def segmentation_enabled():
-        return rest_property(stream.models['segmentation'].IsEnabled, stream.models['segmentation'].SetEnabled, bool)
+@app.route('/pose/enabled', methods=['GET', 'PUT'])
+def pose_enabled():
+    return rest_property(stream.models['pose'].IsEnabled, stream.models['pose'].SetEnabled, bool)
     
-    @app.route('/segmentation/overlay_alpha', methods=['GET', 'PUT'])
-    def segmentation_overlay_alpha():
-        return rest_property(stream.models['segmentation'].net.GetOverlayAlpha, stream.models['segmentation'].net.SetOverlayAlpha, float)
-  
-if args.pose:
-    @app.route('/pose/enabled', methods=['GET', 'PUT'])
-    def pose_enabled():
-        return rest_property(stream.models['pose'].IsEnabled, stream.models['pose'].SetEnabled, bool)
-      
-    @app.route('/pose/confidence_threshold', methods=['GET', 'PUT'])
-    def pose_confidence_threshold():
-        return rest_property(stream.models['pose'].net.GetThreshold, stream.models['pose'].net.SetThreshold, float)
-   
-if args.action:
-    @app.route('/action/enabled', methods=['GET', 'PUT'])
-    def action_enabled():
-        return rest_property(stream.models['action'].IsEnabled, stream.models['action'].SetEnabled, bool)
-        
-    @app.route('/action/confidence_threshold', methods=['GET', 'PUT'])
-    def action_confidence_threshold():
-        return rest_property(stream.models['action'].net.GetThreshold, stream.models['action'].net.SetThreshold, float)
-        
-    @app.route('/action/skip_frames', methods=['GET', 'PUT'])
-    def action_skip_frames():
-        return rest_property(stream.models['action'].net.GetSkipFrames, stream.models['action'].net.SetSkipFrames, int)
-        
-if args.background:
-    @app.route('/background/enabled', methods=['GET', 'PUT'])
-    def background_enabled():
-        return rest_property(stream.models['background'].IsEnabled, stream.models['background'].SetEnabled, bool)
-        
-    
+@app.route('/pose/confidence_threshold', methods=['GET', 'PUT'])
+def pose_confidence_threshold():
+    return rest_property(stream.models['pose'].net.GetThreshold, stream.models['pose'].net.SetThreshold, float)
+
 # start stream thread
 stream.start()
 
