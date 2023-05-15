@@ -128,6 +128,6 @@ ENV LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libgomp.so.1
 # l4t-pytorch:r32.7.1-pth1.10-py3
 
 # install FastAPI at the end
-RUN  python3 -m pip install --upgrade pip && \
-      pip3 install fastapi[all]    
+# RUN  python3 -m pip install --upgrade pip && \
+#       pip3 install fastapi[all]    
 
