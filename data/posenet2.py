@@ -53,28 +53,25 @@ input = videoSource(args.input, argv=sys.argv)
 def index():
     time_start = time.time()
     eye_location = {}
-    eye_location["1"] = {}
-    eye_location["2"] = {}
     img = input.Capture()
 
     if img is None: # timeout
         return "No Image"
     poses = net.Process(img, overlay=args.overlay)
+    eye_location = get_eye_location(eye_location, poses)
+    
+    time_end = time.time()
+    print(time_end - time_start)
+    return eye_location
+
+def get_eye_location(eye_location, poses):
+    eye_location["1"] = {}
+    eye_location["2"] = {}
     for pose in poses:
         for keypoint in pose.Keypoints:
              if keypoint.ID == 1 or keypoint.ID == 2:
                 eye_location[str(keypoint.ID)]["x"] = str(keypoint.x)
                 eye_location[str(keypoint.ID)]["y"] = str(keypoint.y)
-    
-#    buffers = depthBuffers(args)
-#    buffers.Alloc(img.shape, img.format)
-#    out = depthnet.Process(img, buffers.depth, args.colormap, args.filter_mode)
-#    if buffers.use_input:
-#        cudaOverlay(img, buffers.composite, 0, 0)
-#    if buffers.use_depth:
-#        cudaOverlay(buffers.depth, buffers.composite, img.width if buffers.use_input else 0, 0)
-    time_end = time.time()
-    print(time_end - time_start)
     return eye_location
 
 app.run(host="0.0.0.0", port="8050", ssl_context=("cert.pem", "key.pem"), debug=True)

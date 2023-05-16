@@ -5,7 +5,7 @@ import argparse
 import pdb
 import time
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleWare
+from fastapi.middleware.cors import CORSMiddleware
 
 from jetson_inference import poseNet
 from jetson_utils import videoSource, videoOutput, Log, cudaOverlay, cudaDeviceSynchronize
@@ -15,6 +15,8 @@ app = FastAPI()
 origins = [
 	"https://localhost",
 	"http://localhost",
+    "http://localhost:8000",
+    "https://localhost:8000",
 	"https://play.unity.com"
 	]
 
@@ -58,11 +60,8 @@ net = poseNet(args.network, sys.argv, args.threshold)
 
 args.input = "/dev/video0"
 
-# create video sources & outputs
 input = videoSource(args.input, argv=sys.argv)
-#output = videoOutput(args.output, argv=sys.argv)
-#img = input.Capture()
-#poses = net.Process(img, overlay=args.overlay)
+
 
 @app.get('/')
 def index():
@@ -72,24 +71,21 @@ def index():
     eye_location["2"] = {}
     img = input.Capture()
 
-    if img is None: # timeout
+    if img is None: 
         return "No Image"
     poses = net.Process(img, overlay=args.overlay)
+    eye_location = get_eyes(eye_location, poses)
+
+    time_end = time.time()
+    print(time_end - time_start)
+    return eye_location
+
+def get_eyes(eye_location, poses):
     for pose in poses:
         for keypoint in pose.Keypoints:
              if keypoint.ID == 1 or keypoint.ID == 2:
                 eye_location[str(keypoint.ID)]["x"] = str(keypoint.x)
                 eye_location[str(keypoint.ID)]["y"] = str(keypoint.y)
-    
-#    buffers = depthBuffers(args)
-#    buffers.Alloc(img.shape, img.format)
-#    out = depthnet.Process(img, buffers.depth, args.colormap, args.filter_mode)
-#    if buffers.use_input:
-#        cudaOverlay(img, buffers.composite, 0, 0)
-#    if buffers.use_depth:
-#        cudaOverlay(buffers.depth, buffers.composite, img.width if buffers.use_input else 0, 0)
-    time_end = time.time()
-    print(time_end - time_start)
     return eye_location
 
-#app.run(host="0.0.0.0", port="8050", ssl_context=("cert.pem", "key.pem"), debug=True)
+
