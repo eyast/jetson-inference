@@ -1,5 +1,3 @@
-
-
 import sys
 import argparse
 import pdb
@@ -10,24 +8,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from jetson_inference import poseNet
 from jetson_utils import videoSource, videoOutput, Log, cudaOverlay, cudaDeviceSynchronize
 import uvicorn
-
-app = FastAPI()
-
-origins = [
-	"https://localhost",
-	"http://localhost",
-    "http://localhost:8000",
-    "https://localhost:8000",
-	"https://play.unity.com"
-	]
-
-app.add_middleware(
-	CORSMiddleware,
-	allow_origins=origins,
-	allow_credentials=True,
-	allow_methods=["*"],
-	allow_headers=["*"]
-	)
 
 
 # parse the command line
@@ -55,9 +35,25 @@ except:
 	parser.print_help()
 	sys.exit(0)
 
-# load the pose estimation model
+app = FastAPI()
+
+origins = [
+	"https://localhost",
+	"http://localhost",
+	"https://play.unity.com",
+    "*"
+	]
+
+app.add_middleware(
+	CORSMiddleware,
+	allow_origins=origins,
+	allow_credentials=True,
+	allow_methods=["*"],
+	allow_headers=["*"]
+	)
+
 net = poseNet(args.network, sys.argv, args.threshold)
-#depthnet = depthNet(args.depthnetwork, sys.argv)
+
 
 args.input = "/dev/video0"
 
