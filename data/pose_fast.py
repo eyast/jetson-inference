@@ -73,7 +73,7 @@ def index():
     img = input.Capture()
 
     if img is None: # timeout
-B        return "No Image"
+        return "No Image"
     poses = net.Process(img, overlay=args.overlay)
     for pose in poses:
         for keypoint in pose.Keypoints:
