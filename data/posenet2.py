@@ -5,9 +5,9 @@ import argparse
 import pdb
 import time
 import flask
-from flask_cors import CORS
+#from flask_cors import CORS
 app = flask.Flask(__name__)
-cors = CORS(app)
+#cors = CORS(app)
 
 from jetson_inference import poseNet, depthNet
 from jetson_utils import videoSource, videoOutput, Log, cudaOverlay, cudaDeviceSynchronize
@@ -77,4 +77,4 @@ def index():
     print(time_end - time_start)
     return eye_location
 
-app.run(host="0.0.0.0", port="8050", debug=True)
+app.run(host="0.0.0.0", port="8050", ssl_context='adhoc', debug=True)
