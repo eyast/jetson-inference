@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from jetson_inference import poseNet
 from jetson_utils import videoSource, videoOutput, Log, cudaOverlay, cudaDeviceSynchronize
+import uvicorn
 
 app = FastAPI()
 
@@ -89,3 +90,5 @@ def get_eyes(eye_location, poses):
     return eye_location
 
 
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
