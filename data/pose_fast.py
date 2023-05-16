@@ -1,3 +1,5 @@
+# for certificate, following
+# https://pystar.substack.com/p/how-to-create-a-fake-certificate
 import sys
 import argparse
 import pdb
@@ -88,4 +90,4 @@ def get_eyes(eye_location, poses):
 
 if __name__ == '__main__':
     uvicorn.run(app, host='0.0.0.0', port=8000, \
-                ssl_keyfile="key.pem", ssl_certfile="cert.pem")
+                ssl_keyfile="server.key", ssl_certfile="server.pem")
