@@ -5,7 +5,9 @@ import argparse
 import pdb
 import time
 import flask
+from flask_cors import CORS
 app = flask.Flask(__name__)
+cors = CORS(app)
 
 from jetson_inference import poseNet, depthNet
 from jetson_utils import videoSource, videoOutput, Log, cudaOverlay, cudaDeviceSynchronize
