@@ -73,7 +73,7 @@ def index():
     img = input.Capture()
 
     if img is None: # timeout
-        return "No Image"
+B        return "No Image"
     poses = net.Process(img, overlay=args.overlay)
     for pose in poses:
         for keypoint in pose.Keypoints:
@@ -92,4 +92,4 @@ def index():
     print(time_end - time_start)
     return eye_location
 
-app.run(host="0.0.0.0", port="8050", ssl_context=("cert.pem", "key.pem"), debug=True)
+#app.run(host="0.0.0.0", port="8050", ssl_context=("cert.pem", "key.pem"), debug=True)
